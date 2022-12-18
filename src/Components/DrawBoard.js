@@ -1,42 +1,62 @@
 import * as React from 'react';
-import Box from '@mui/material/Box';
+// import Box from '@mui/material/Box';
 import { Grid } from '@mui/material';
 
 export default function DrawBoard(difficulty) {
-    const boardSize = (difficulty+1) * 8;
-    const mineNum = (difficulty+1) * 6;
-    const [board, setBoard] = React.useState([]);
-    const [gameState, setGameState] = React.useState(0);
-    const createBoard = () => {
-        // this function creates a board of size boardSize x boardSize and fills it with 0s
+
+    const createBoard = (difficulty) => {
+        const boardSize = (difficulty+1) * 8;
+        const mineNum = (difficulty+1) * 6;
+        let board = drawBoard(boardSize);
+        board = placeMines(mineNum, board);
+        return(board);
+    }
+
+    const drawBoard = (boardSize) => {
         let board = [];
         for (let i = 0; i < boardSize; i++) {
-            board.push([]);
+            let row = [];
             for (let j = 0; j < boardSize; j++) {
-                board[i].push(0);
+                row.push(0);
             }
+            board.push(row);
         }
-        board = placeMines(board);
-        setBoard(board);
+        return board;
     }
-    const placeMines = () => {
+
+    const placeMines = (mineNum, board) => {
         let minesPlaced = 0;
         while (minesPlaced < mineNum) {
-            let randomRow = Math.floor(Math.random() * boardSize);
-            let randomCol = Math.floor(Math.random() * boardSize);
-            if (board[randomRow][randomCol] !== -1) {
-                board[randomRow][randomCol] = -1;
+            let x = Math.floor(Math.random() * board.length);
+            let y = Math.floor(Math.random() * board.length);
+            if (board[x][y] !== 4) {
+                board[x][y] = 4;
                 minesPlaced++;
             }
         }
         return board;
     }
 
-    // on startup, create the board then console.log it
-    React.useEffect(() => {
-        createBoard();
-        console.log(board);
+    const startGame = (difficulty) => {
+        let gameBoard = createBoard(difficulty);
+        console.log(gameBoard);
     }
-    , []);
+
+    return (
+        <div>
+            <Grid container spacing={2}>
+                <Grid item xs={4}>
+                    <button onClick={() => startGame(0)}>Easy</button>
+                </Grid>
+                <Grid item xs={4}>
+                    <button onClick={() => startGame(1)}>Medium</button>
+                </Grid>
+                <Grid item xs={4}>
+                    <button onClick={() => startGame(2)}>Hard</button>
+                </Grid>
+            </Grid>
+        </div>
+    );
+    
 
 }
